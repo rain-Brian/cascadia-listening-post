@@ -72,8 +72,7 @@ python3 tools/validate_schemas.py
 5. Create scoped credentials. Capture gets write on `raw/` and nothing else. **Capture must not
    be able to delete.**
 
-Cloudflare: `bash deploy/cloudflare/setup.sh` (requires `CF_PREFIX`).
-Azure: [deploy/azure/](deploy/azure/).
+Cloudflare: [deploy/cloudflare/](deploy/cloudflare/). Azure: [deploy/azure/](deploy/azure/).
 
 **Verify:** write a file at a contract path, read it back, confirm your parser round-trips it.
 Confirm the capture credential cannot delete.
@@ -250,7 +249,7 @@ Two host requirements, and only two:
 1. Serve `.json`, `.mp3` and `.mp4` with correct content types.
 2. Do not run a static-site generator over already-rendered HTML.
 
-Cloudflare Pages: [deploy/cloudflare/pages.md](deploy/cloudflare/pages.md).
+Cloudflare Pages: [deploy/cloudflare/](deploy/cloudflare/#5-the-report-site-on-pages).
 
 Keep the site repository generated, and say so inside it, or somebody will send a pull request
 that the next publish silently overwrites.

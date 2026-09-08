@@ -94,8 +94,8 @@ Make the lease the contract:
 - If the cloud is unreachable, raise rather than return an empty list. An empty list means
   "nothing to reclaim" and looks like success.
 
-Run it on its own schedule, independent of any campaign. See `reapExpiredLeases` in
-[../cloudflare/src/index.js](../cloudflare/src/index.js).
+Run it on its own schedule, independent of any campaign. See the lease reaper in
+[../cloudflare/](../cloudflare/#the-lease-reaper).
 
 ## Credentials
 

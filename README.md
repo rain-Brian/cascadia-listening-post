@@ -50,7 +50,7 @@ Each is a section of [REBUILD.md](REBUILD.md), with commands and a verification 
 | [REBUILD.md](REBUILD.md) | The instruction set |
 | [LIMITATIONS.md](LIMITATIONS.md) | What cannot be reproduced, and why |
 | [contracts/](contracts/) | JSON Schemas for every artifact the system writes |
-| [deploy/cloudflare/](deploy/cloudflare/) | Worked example: R2, Pages, Workers, Queues |
+| [deploy/cloudflare/](deploy/cloudflare/) | Worked example in text: R2, Pages, Workers, Queues |
 | [deploy/azure/](deploy/azure/) | The reference deployment, as a shape |
 | [deploy/bring-your-own/](deploy/bring-your-own/) | Capture and GPU inference requirements |
 | [tools/](tools/) | Redaction gate, schema validator, `verify.sh` |
