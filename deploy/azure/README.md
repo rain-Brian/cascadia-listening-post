@@ -1,5 +1,7 @@
 # Azure: the reference deployment
 
+What Cascadia Listening Post runs on today.
+
 What the system this documentation describes actually runs on, as a shape rather than an
 inventory. Every identifier is a parameter; none are recorded here.
 

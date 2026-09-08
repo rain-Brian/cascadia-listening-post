@@ -37,4 +37,4 @@ following even when they seem fussy:
 - Give capture credentials that can write the raw zone and nothing else. Capture should not be
   able to delete.
 
-See Layer 7 in [ARCHITECTURE.md](ARCHITECTURE.md).
+See Layer 7 in [ARCHITECTURE.md](reference/ARCHITECTURE.md).

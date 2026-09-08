@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/rain-Brian/wildlife-stack/contracts/ingestion-event.schema.json",
+  "$id": "https://github.com/rain-Brian/cascadia-listening-post/contracts/ingestion-event.schema.json",
   "title": "Ingestion event",
   "description": "One capture or transfer event, appended to a manifest. Write these only if something reads them. In the reference deployment four producers emitted three incompatible shapes into an events file that is uploaded to the lake and that nothing in either repository has ever read, while the only value actually consumed from the manifest tree was the modification time of a marker file. A write-only log is cost without signal.",
   "type": "object",

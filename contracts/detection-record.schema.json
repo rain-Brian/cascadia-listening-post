@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/rain-Brian/wildlife-stack/contracts/detection-record.schema.json",
+  "$id": "https://github.com/rain-Brian/cascadia-listening-post/contracts/detection-record.schema.json",
   "title": "Detection record",
   "description": "One detection from any model. A common envelope with the payload discriminated by model kind. This does not exist in the reference deployment, and its absence is the single most expensive gap there: acoustic and video models emit incompatible shapes, summary field lists are duplicated across files and match by luck, one CSV header is built from the keys of whichever record happened to come first (so an empty result writes a one-column header), and no payload carries a run identifier. Define this before you write a second model.",
   "type": "object",

@@ -61,7 +61,7 @@ where nobody can say what a backup contains.
 
 No model code, no configuration, no credentials, no infrastructure detail. This is a public
 artifact and the redaction gate exists because the leak that matters is the one nobody meant to
-write. See [../../PUBLISHING.md](../../PUBLISHING.md).
+write. See [../../PUBLISHING.md](../../reference/PUBLISHING.md).
 
 Keeping code out is also what keeps copyleft and responsible-use licence terms from attaching
 to the published pages. That is not incidental; it is the reason the split exists.

@@ -1,5 +1,7 @@
 # Bring your own: capture and inference
 
+Stages 3 and 6 of [../../REBUILD.md](../../REBUILD.md).
+
 The two tiers no serverless platform hosts for you. Stated as requirements rather than a
 prescription, because the right answer depends on what you already run.
 

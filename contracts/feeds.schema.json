@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/rain-Brian/wildlife-stack/contracts/feeds.schema.json",
+  "$id": "https://github.com/rain-Brian/cascadia-listening-post/contracts/feeds.schema.json",
   "title": "Feed registry",
   "description": "The single source of truth for what feeds exist, whether they are worth reading, and what may be published from them. The publish rights gate reads the rights block and refuses any feed whose redistribute is not 'yes'. Infrastructure fields (which host runs a feed, which service unit) are deliberately absent from this schema: they belong in deployment configuration, not in a registry that is duplicated into a public artifact.",
   "type": "object",

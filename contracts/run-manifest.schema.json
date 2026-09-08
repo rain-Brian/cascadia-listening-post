@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/rain-Brian/wildlife-stack/contracts/run-manifest.schema.json",
+  "$id": "https://github.com/rain-Brian/cascadia-listening-post/contracts/run-manifest.schema.json",
   "title": "Run manifest",
   "description": "What a single inference run was asked to do and what it actually did. This is what a report reads to state its coverage, so it has to be produced by the run rather than assembled afterwards from memory.",
   "type": "object",

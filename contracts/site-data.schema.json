@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/rain-Brian/wildlife-stack/contracts/site-data.schema.json",
+  "$id": "https://github.com/rain-Brian/cascadia-listening-post/contracts/site-data.schema.json",
   "title": "Site roll-up",
   "description": "The machine-readable index of the whole site, generated from every report.json. Nothing here is scraped from a rendered page. That is the guarantee that makes site-level figures checkable: a claim that exists only in a page's prose cannot become a site-level number, because no code path reads prose.",
   "type": "object",

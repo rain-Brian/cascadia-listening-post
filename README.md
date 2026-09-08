@@ -1,93 +1,88 @@
-# Wildlife Stack
+# Cascadia Listening Post: build instructions
 
-How to rebuild a continuous wildlife detection pipeline on your own resources.
+How to build a continuous wildlife detection pipeline over public media feeds, on your own
+resources.
 
-This repository is documentation and deployment configuration. It carries no model code and
-no credentials. It exists so that an organisation can stand up the system that produces
-[Cascadia Listening Post](https://rain-Brian.github.io/wildlife-detections/) without needing
-access to the private repositories that run it.
+Public hydrophones and cameras are recorded around the clock, run through detection models, and
+turned into reports that show what was found and how far it can be trusted. This is the
+instruction set for building that. The reference deployment publishes at
+[rain-Brian.github.io/wildlife-detections](https://rain-Brian.github.io/wildlife-detections/).
 
-## What the system does
+**Start with [LIMITATIONS.md](LIMITATIONS.md), then work through [REBUILD.md](REBUILD.md).**
 
-Public media feeds are captured continuously, archived to an object store, run through
-detection and classification models, and turned into review reports that a person reads and
-judges. Capture and inference are separate processes: nothing that detects runs inside the
-process that records, so a model change cannot cost recording time.
+## Before you start
 
-| Workstream | Feeds | Models |
+Read [LIMITATIONS.md](LIMITATIONS.md) first. One model cannot be obtained at all, two feed types
+are not freely reusable, and two of the tiers do not run on serverless platforms. Fifteen
+minutes there will save you a week.
+
+You need:
+
+- An object store, and somewhere to run two long-lived things (capture) and one bursty thing
+  (inference). See [deploy/](deploy/).
+- Feeds you have cleared the rights on. See [reference/RIGHTS.md](reference/RIGHTS.md).
+- Each model, obtained from its own upstream source. **This repository contains no model code
+  and no weights.**
+
+## The stages
+
+Each is a section of [REBUILD.md](REBUILD.md), with commands and a verification step.
+
+| # | Stage | Skippable |
 |---|---|---|
-| Marine audio | Hydrophones | Call-presence detection, ecotype classification |
-| Underwater video | Aquarium camera | YOLO-Fish with a YOLO-World second pass |
-| Terrestrial video | Fixed webcams | MegaDetector |
-| Operations | The capture and transfer tier itself | Deterministic rules, with an advisory LLM tier |
+| 0 | Rights and licences | no |
+| 1 | Contracts | no, and do it first |
+| 2 | Object store | no |
+| 3 | Capture | no |
+| 4 | Signal health | no, and earlier than feels necessary |
+| 5 | Transfer | if capture writes straight to the store |
+| 6 | Inference | no |
+| 7 | Measure false-positive floors | no, before publishing any detection |
+| 8 | Reports and publishing | no |
+| 9 | The site | no |
+| 10 | Orchestration | yes, at first |
+| 11 | Advisory agents | yes |
 
-## Start here
+## Layout
 
-| Question | Document |
+| Path | What |
 |---|---|
-| What are the pieces and how do they fit | [ARCHITECTURE.md](ARCHITECTURE.md) |
-| How do I actually build it | [REBUILD.md](REBUILD.md) |
-| What can I not rebuild, and why | [LIMITATIONS.md](LIMITATIONS.md) |
-| What are the data shapes | [contracts/](contracts/) |
-| How does a run become a public page | [PUBLISHING.md](PUBLISHING.md) |
-| Who owns the media and what may I publish | [RIGHTS.md](RIGHTS.md) |
-| What do the numbers on a report mean | [METHODS.md](METHODS.md) |
-| Where do LLM agents fit | [AGENTS.md](AGENTS.md) |
-| How do I keep infrastructure detail out of a public artifact | [tools/redact.md](tools/redact.md) |
-
-**Read [LIMITATIONS.md](LIMITATIONS.md) before you start.** Parts of this system cannot be
-reproduced from a clean start, and one of the models cannot be obtained at all. Knowing that
-first will save you a week.
+| [REBUILD.md](REBUILD.md) | The instruction set |
+| [LIMITATIONS.md](LIMITATIONS.md) | What cannot be reproduced, and why |
+| [contracts/](contracts/) | JSON Schemas for every artifact the system writes |
+| [deploy/cloudflare/](deploy/cloudflare/) | Worked example: R2, Pages, Workers, Queues |
+| [deploy/azure/](deploy/azure/) | The reference deployment, as a shape |
+| [deploy/bring-your-own/](deploy/bring-your-own/) | Capture and GPU inference requirements |
+| [tools/](tools/) | Redaction gate, schema validator, `verify.sh` |
+| [reference/](reference/) | Why the instructions say what they say |
 
 ## Checking this repository
 
 ```sh
-python3 tools/check_redaction.py .          # nothing here names real infrastructure
-python3 tools/test_redaction.py             # the rules still catch real leaks
-PUBLISHED_SITE=<a-site-repo> bash tools/verify.sh   # everything, including schemas
+python3 tools/check_redaction.py .                   # names no real infrastructure
+python3 tools/test_redaction.py                      # the rules still catch real leaks
+PUBLISHED_SITE=<a-site-repo> bash tools/verify.sh    # everything, including schemas
 ```
 
-The schemas in `contracts/` are validated against data from a running deployment, not written
-from memory: `report.schema.json` and `site-data.schema.json` are checked against published
-pages. Point `PUBLISHED_SITE` at a site repository to repeat that.
+The schemas are validated against a running deployment rather than written from memory.
 
 ## What this repository is not
 
-It is not a distribution of the pipeline. There is no `pip install`, no container image, and
-no model weights here. You write the implementation, or you obtain it from its upstream
-sources under their own licences.
+Not a distribution of the pipeline. No `pip install`, no container image, no weights.
 
-That boundary is deliberate. The inference tier combines GPL-3.0 model code with a
-RAIL-licensed model whose terms carry use restrictions into derived work. Keeping code out of
-this repository keeps those obligations from attaching to the documentation, and keeps the
-licence question where it belongs, which is with whoever assembles a running system.
-
-## The four-repository shape
-
-The reference implementation is split four ways, and the split is worth copying:
-
-| Repository | Holds |
-|---|---|
-| hub | Architecture, decisions, rights positions. Runs nothing |
-| capture | Capture, forward, archive. No model code, ever |
-| inference | Models, decision layer, report generation, orchestration |
-| site | Rendered reports only. Public. No code, no configuration |
-
-Two boundaries hold it apart and both earn their keep. **Capture never runs a model**, which
-is what lets the inference tier carry restrictive model licences without those reaching the
-capture tier. **The public site carries no code**, which is what keeps those same licences
-from gating a share of the results.
+That boundary is deliberate: the inference tier combines GPL-3.0 model code with a
+RAIL-licensed model whose terms carry use restrictions into derived work. Keeping code out
+keeps those obligations from attaching to the instructions, and leaves the licence question
+with whoever assembles a running system.
 
 ## Licence
 
-Prose in this repository is CC BY 4.0. Configuration, schemas and scripts are MIT. See
-[LICENSE](LICENSE).
+Prose is CC BY 4.0. Configuration, schemas and scripts are MIT. See [LICENSE](LICENSE).
 
-Neither licence grants you any right in the upstream media feeds, the models, or the
-published reports. See [RIGHTS.md](RIGHTS.md).
+Neither grants any right in the upstream feeds, the models, or any published report.
 
 ## Affiliation
 
-A personal research project by Brian Rain. Not a Microsoft product, and not affiliated with
-or endorsed by the Microsoft AI for Good Lab, Orcasound, the National Park Service, or any
-other feed operator.
+A personal research project by Brian Rain. Not a Microsoft product, and not affiliated with or
+endorsed by the Microsoft AI for Good Lab, Orcasound, the National Park Service, or any other
+feed operator.

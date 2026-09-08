@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Provision the Cloudflare account resources for a wildlife detection pipeline.
+# Provision the Cloudflare account resources for a Cascadia Listening Post.
 #
 # Every resource name derives from CF_PREFIX, which is required. There are no
 # defaults on purpose: a deploy script with a real account name baked in as a

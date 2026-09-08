@@ -9,13 +9,13 @@ Corrections and additions are welcome, especially from anyone who has tried to f
 incomplete, out of date, or simply false, that is the most valuable report. Say which document,
 which step, and what actually happened.
 
-**A platform mapping.** The capability table in [ARCHITECTURE.md](ARCHITECTURE.md) covers
+**A platform mapping.** The capability table in [ARCHITECTURE.md](reference/ARCHITECTURE.md) covers
 Cloudflare and Azure. A worked example for another platform is welcome, in the same shape as
 [deploy/cloudflare/](deploy/cloudflare/): parameters with no defaults, and honest about what the
 platform cannot do.
 
 **A rights position.** If you have cleared terms with a feed operator, the reasoning is worth
-recording. See [RIGHTS.md](RIGHTS.md).
+recording. See [RIGHTS.md](reference/RIGHTS.md).
 
 ## Please do not send
 

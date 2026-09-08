@@ -1,5 +1,7 @@
 # Cloudflare: worked example
 
+Stages 2, 9 and 10 of [../../REBUILD.md](../../REBUILD.md).
+
 A complete path for the parts of the system Cloudflare hosts well, and an honest account of the
 two parts it does not host at all.
 
@@ -82,4 +84,4 @@ nobody tore down: roughly $560 a month for one, and $133 lost in a single incide
 finished sweep left two running 86 hours past an expired lease.
 
 Whatever you use for inference, make the lease the contract and make teardown independent of
-whether the campaign succeeded. See Layer 5 in [../../ARCHITECTURE.md](../../ARCHITECTURE.md).
+whether the campaign succeeded. See Layer 5 in [../../ARCHITECTURE.md](../../reference/ARCHITECTURE.md).

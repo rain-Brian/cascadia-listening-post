@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/rain-Brian/wildlife-stack/contracts/report.schema.json",
+  "$id": "https://github.com/rain-Brian/cascadia-listening-post/contracts/report.schema.json",
   "title": "Report provenance record",
   "description": "The report.json written beside every published page. This is the source of truth for the report: the page is a rendering of it. Site-level figures are built from these records and never scraped from rendered HTML, which is what stops a claim that exists only in prose becoming a site-level number. Where the page and this record disagree, this record is what the run produced.",
   "type": "object",
