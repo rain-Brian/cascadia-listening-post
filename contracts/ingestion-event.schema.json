@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/rain-Brian/wildlife-stack/contracts/ingestion-event.schema.json",
+  "title": "Ingestion event",
+  "description": "One capture or transfer event, appended to a manifest. Write these only if something reads them. In the reference deployment four producers emitted three incompatible shapes into an events file that is uploaded to the lake and that nothing in either repository has ever read, while the only value actually consumed from the manifest tree was the modification time of a marker file. A write-only log is cost without signal.",
+  "type": "object",
+  "required": ["schema_version", "event_type", "occurred_at", "feed", "camera", "outcome"],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "event_type": {
+      "type": "string",
+      "enum": ["capture_segment", "transfer_batch", "prune", "watchdog_action", "heartbeat"],
+      "description": "Present on every event. In the reference deployment it was present in three producers and absent in two, so no consumer could dispatch on it."
+    },
+    "occurred_at": { "type": "string", "format": "date-time" },
+    "feed": {
+      "type": "string",
+      "description": "The specific feed. Never a placeholder like 'all': a manifest that cannot attribute a failure to a camera cannot be used to diagnose one."
+    },
+    "camera": { "type": "string" },
+    "outcome": { "type": "string", "enum": ["ok", "failed", "skipped", "partial"] },
+    "zone": { "type": "string", "enum": ["raw", "sent", "prepared"] },
+    "artifact_count": { "type": "integer", "minimum": 0 },
+    "bytes": { "type": "integer", "minimum": 0 },
+    "duration_seconds": { "type": "number", "minimum": 0 },
+    "error": {
+      "type": ["string", "null"],
+      "description": "Structured where the tool offers structured output. String-matching a transfer tool's human-readable text means a message-format change reads as success, and if a prune is gated on that classification the failure deletes data."
+    },
+    "detail": { "type": "object" }
+  }
+}

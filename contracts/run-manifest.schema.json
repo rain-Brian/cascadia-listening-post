@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/rain-Brian/wildlife-stack/contracts/run-manifest.schema.json",
+  "title": "Run manifest",
+  "description": "What a single inference run was asked to do and what it actually did. This is what a report reads to state its coverage, so it has to be produced by the run rather than assembled afterwards from memory.",
+  "type": "object",
+  "required": ["schema_version", "run_id", "model_name", "model_version", "requested", "status", "started_at"],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "run_id": { "type": "string" },
+    "model_name": { "type": "string" },
+    "model_version": { "type": "string" },
+    "code_commit": { "type": ["string", "null"] },
+    "started_at": { "type": "string", "format": "date-time" },
+    "finished_at": { "type": ["string", "null"], "format": "date-time" },
+    "status": {
+      "type": "string",
+      "enum": ["running", "ok", "failed", "partial", "deferred"],
+      "description": "A status that can express failure. If the only value your runner ever writes is 'ok', it is not a status. 'deferred' is distinct from both success and failure: the run did not produce a report and that was the correct outcome, because the question it would have answered was unresolved. A scheduler should retry a deferred run, not record the day as done."
+    },
+    "requested": {
+      "type": "object",
+      "required": ["feeds", "start_utc", "end_utc"],
+      "properties": {
+        "feeds": { "type": "array", "items": { "type": "string" }, "description": "Entries of the form feed/camera." },
+        "start_utc": { "type": "string" },
+        "end_utc": { "type": "string" }
+      }
+    },
+    "completed": {
+      "type": "object",
+      "description": "What was actually processed. The difference between this and 'requested' is the coverage gap, and stating it is what stops a quiet day reading as an unrecorded one.",
+      "properties": {
+        "artifacts_seen": { "type": "integer", "minimum": 0 },
+        "artifacts_processed": { "type": "integer", "minimum": 0 },
+        "artifacts_failed": { "type": "integer", "minimum": 0 },
+        "artifacts_unparsable": { "type": "integer", "minimum": 0 },
+        "usable_hours": { "type": ["number", "null"], "minimum": 0 },
+        "by_camera": { "type": "object", "additionalProperties": { "type": "integer" } }
+      }
+    },
+    "detections_written": { "type": "integer", "minimum": 0 },
+    "output_prefix": { "type": "string", "description": "Where the run wrote. One convention, not four." },
+    "environment": {
+      "type": "object",
+      "description": "Enough to reproduce the run. Without a resolved dependency set, two machines provisioned a week apart run different library versions for the same sweep.",
+      "properties": {
+        "image": { "type": ["string", "null"] },
+        "lockfile_digest": { "type": ["string", "null"] },
+        "seed": { "type": ["integer", "null"] }
+      }
+    }
+  }
+}

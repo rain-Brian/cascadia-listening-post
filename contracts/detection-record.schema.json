@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/rain-Brian/wildlife-stack/contracts/detection-record.schema.json",
+  "title": "Detection record",
+  "description": "One detection from any model. A common envelope with the payload discriminated by model kind. This does not exist in the reference deployment, and its absence is the single most expensive gap there: acoustic and video models emit incompatible shapes, summary field lists are duplicated across files and match by luck, one CSV header is built from the keys of whichever record happened to come first (so an empty result writes a one-column header), and no payload carries a run identifier. Define this before you write a second model.",
+  "type": "object",
+  "required": [
+    "schema_version", "run_id", "model_name", "model_version",
+    "feed", "camera", "source_blob", "source_timestamp_utc", "detection"
+  ],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "run_id": {
+      "type": "string",
+      "description": "The execution that produced this row. On every record, from the first record. It is what makes a bad run retractable without guessing which rows came from it."
+    },
+    "code_commit": { "type": ["string", "null"], "description": "Commit of the code that produced the row. Null only where the tree was dirty, and a dirty tree should fail a scheduled run." },
+    "model_name": { "type": "string" },
+    "model_version": { "type": "string" },
+    "model_kind": {
+      "type": "string",
+      "enum": ["acoustic", "video", "image"],
+      "description": "Discriminates the payload. Set it explicitly rather than inferring it from model_name, so a renamed model does not change how its rows parse."
+    },
+    "feed": { "type": "string" },
+    "camera": { "type": "string" },
+    "source_blob": {
+      "type": "string",
+      "description": "Full lake path of the artifact this detection came from. Must satisfy the path contract; a row whose source cannot be parsed is counted and reported, never silently averaged into a coverage figure."
+    },
+    "source_timestamp_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the signal was captured, not when it was processed."
+    },
+    "detection": {
+      "type": "object",
+      "required": ["label", "confidence"],
+      "properties": {
+        "label": { "type": "string" },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A number, always. Prose belongs in a summary field."
+        },
+        "offset_seconds": { "type": "number", "minimum": 0, "description": "Acoustic and video: offset into the source artifact." },
+        "duration_seconds": { "type": "number", "minimum": 0 },
+        "bbox": {
+          "type": "array",
+          "description": "Video and image: [x, y, w, h] normalised to 0..1, so a resolution change does not invalidate stored rows.",
+          "items": { "type": "number", "minimum": 0, "maximum": 1 },
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "frame_index": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "floor": {
+      "type": ["object", "null"],
+      "description": "The measured false-positive floor for this label at this site, and whether this row clears it. Carried on the record so a consumer does not have to re-derive it, and so a row is self-describing about whether it is publishable.",
+      "properties": {
+        "value": { "type": "number", "minimum": 0, "maximum": 1 },
+        "clears": { "type": "boolean" },
+        "measured_on": { "type": "string", "format": "date" }
+      }
+    },
+    "review": {
+      "type": ["object", "null"],
+      "description": "Human verdict, where one exists. Absent means unreviewed, which is different from reviewed-and-rejected.",
+      "properties": {
+        "verdict": { "type": "string", "enum": ["accept", "reject", "uncertain"] },
+        "reviewer": { "type": "string" },
+        "reviewed_at": { "type": "string", "format": "date-time" },
+        "note": { "type": "string" }
+      }
+    }
+  }
+}

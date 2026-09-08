@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/rain-Brian/wildlife-stack/contracts/report.schema.json",
+  "title": "Report provenance record",
+  "description": "The report.json written beside every published page. This is the source of truth for the report: the page is a rendering of it. Site-level figures are built from these records and never scraped from rendered HTML, which is what stops a claim that exists only in prose becoming a site-level number. Where the page and this record disagree, this record is what the run produced.",
+  "type": "object",
+  "required": [
+    "report_id", "title", "schema_version", "generated_at", "license",
+    "sites", "models", "runs", "window", "counts", "rights",
+    "featured_findings", "taxonomy", "review_status",
+    "evidence_assets", "redaction_allowances"
+  ],
+  "properties": {
+    "report_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "description": "Becomes a public URL path and is permanent. Changing it breaks every link already sent. Certain names are reserved for generated source hub pages; publishing a report under one must be refused, because staging a report removes its destination directory first."
+    },
+    "title": { "type": "string" },
+    "schema_version": { "type": "integer", "const": 1 },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "license": {
+      "type": "string",
+      "description": "COMPUTED, never chosen. A report takes the most restrictive terms any contributing feed imposes, read from derivatives_license in the feed registry. Two different share-alike licences are refused rather than ranked, because that combination cannot be satisfied at all."
+    },
+    "sites": { "type": "array", "items": { "$ref": "#/$defs/site" } },
+    "models": { "type": "array", "items": { "$ref": "#/$defs/model" } },
+    "floors": {
+      "type": "array",
+      "description": "Measured false-positive floors that licensed the claims on this page. A label with no measured floor at that site gets no card, however confident the model was.",
+      "items": { "$ref": "#/$defs/floor" }
+    },
+    "runs": {
+      "type": "array",
+      "description": "Run identifiers that produced this report.",
+      "items": { "type": "string" }
+    },
+    "window": { "$ref": "#/$defs/window" },
+    "counts": { "$ref": "#/$defs/counts" },
+    "rights": { "type": "array", "items": { "$ref": "#/$defs/rightsRecord" }, "minItems": 1 },
+    "featured_findings": { "type": "array", "items": { "$ref": "#/$defs/finding" } },
+    "taxonomy": { "type": "array", "items": { "type": "string" } },
+    "review_status": {
+      "type": "string",
+      "enum": ["human reviewed", "model candidate", "classification above site floor", "source quality gap"],
+      "description": "'model candidate' means a queue: model output published before anyone judged it. Nothing on such a page is an identification, and floors do not license it."
+    },
+    "series": { "type": "object", "description": "Position in a recurring series, where the report belongs to one." },
+    "review": { "type": "object", "description": "Human review metadata, where a person has judged this page." },
+    "coverage_gaps": { "type": "array", "description": "Known periods with no usable signal, stated rather than left to be inferred from a low count." },
+    "evidence_assets": { "type": "array", "items": { "$ref": "#/$defs/asset" } },
+    "featured_evidence": { "type": "array" },
+    "media_quality": { "type": "object", "description": "How the bundled media was selected and what it is. Lets a reader tell a full source window from a trimmed clip." },
+    "model_refresh": {
+      "type": "object",
+      "description": "Whether the model output behind this page is current or was inherited from an earlier run.",
+      "properties": {
+        "decision": { "type": "string" },
+        "reason": { "type": "string" }
+      }
+    },
+    "quality": {
+      "type": "object",
+      "description": "The selection rule in force and the public claim it supports. Stating both is what lets a reader check that the claim does not exceed the rule.",
+      "properties": {
+        "selection_rule": { "type": "string" },
+        "public_claim": { "type": "string" }
+      }
+    },
+    "redaction_allowances": {
+      "type": "array",
+      "description": "Every redaction override used, recorded in the published artifact rather than only in somebody's shell history. An override takes a specific literal string, never a rule.",
+      "items": { "type": "string" }
+    }
+  },
+  "$defs": {
+    "site": {
+      "type": "object",
+      "required": ["feed", "camera", "label", "kind"],
+      "properties": {
+        "feed": { "type": "string" },
+        "camera": { "type": "string" },
+        "label": { "type": "string" },
+        "kind": { "type": "string" },
+        "location": { "type": ["object", "null"] }
+      }
+    },
+    "model": {
+      "type": "object",
+      "required": ["model_name", "model_version"],
+      "description": "code_commit, license, lineage and caveat are nullable but should not stay null. A published claim whose model has no recorded commit cannot be reproduced, and one whose licence is unrecorded cannot be cleared.",
+      "properties": {
+        "model_name": { "type": "string" },
+        "model_version": { "type": "string" },
+        "code_commit": { "type": ["string", "null"] },
+        "license": { "type": ["string", "null"] },
+        "lineage": { "type": ["string", "null"] },
+        "caveat": { "type": ["string", "null"] }
+      }
+    },
+    "floor": {
+      "type": "object",
+      "description": "A false-positive rate measured for one label at one site. Floors are per site: pooling them lets a busy site clear a threshold on its own volume and then license claims at a quiet site that never earned one.",
+      "properties": {
+        "feed": { "type": "string" },
+        "camera": { "type": "string" },
+        "label": { "type": "string" },
+        "floor": { "type": "number", "minimum": 0, "maximum": 1 },
+        "method": { "type": "string" }
+      }
+    },
+    "window": {
+      "type": "object",
+      "required": ["start_utc", "end_utc", "usable_hours"],
+      "description": "All three fields are nullable, and null carries meaning. A report whose coverage is naturally counted in something other than hours (video segments, frames analysed) records that count in 'counts' and leaves usable_hours null rather than fabricating an hours figure. What is NOT acceptable is a report that states no coverage anywhere: a day with no detections and a day with no recording look identical on a count, and coverage is the only thing that separates them.",
+      "properties": {
+        "start_utc": { "type": ["string", "null"] },
+        "end_utc": { "type": ["string", "null"] },
+        "usable_hours": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "description": "Hours of USABLE signal, which is a stricter test than hours recording. READ from run artifacts, never typed: a hand-entered figure is a claim about provenance rather than provenance. Null where coverage is counted another way; see the note on this object."
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "description": "Deliberately open. The bundling counts below are common to every report; the rest are specific to what a given run measured, and inventing a fixed vocabulary for them would mean either lying or padding with zeros.",
+      "required": ["assets_bundled"],
+      "properties": {
+        "assets_bundled": { "type": "integer", "minimum": 0 },
+        "assets_bytes": { "type": "integer", "minimum": 0 },
+        "assets_deduplicated": { "type": "integer", "minimum": 0 },
+        "assets_missing": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Must be 0 in a published report. Every local reference has to resolve inside the bundle, or publish refuses."
+        },
+        "assets_dropped_for_budget": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "What did not fit the byte budget. Counted and reported on the page, never dropped silently."
+        },
+        "source_paths_unparsable": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Source paths that failed the lake path contract. Counted and reported rather than silently averaged in."
+        },
+        "reviewable": { "type": "boolean" }
+      },
+      "additionalProperties": { "type": ["integer", "number", "boolean", "string", "object", "null"] }
+    },
+    "rightsRecord": {
+      "type": "object",
+      "required": ["feed", "holder", "terms", "attribution"],
+      "description": "Copied from the feed registry at publish time, so the report carries the rights position that was in force when it was built.",
+      "properties": {
+        "feed": { "type": "string" },
+        "holder": { "type": "string" },
+        "terms": { "type": "string" },
+        "terms_url": { "type": "string" },
+        "source_url": { "type": "string" },
+        "attribution": { "type": "string" },
+        "attribution_url": { "type": "string" },
+        "derivatives_license": { "type": ["string", "null"] },
+        "commercial_use": { "type": "string" },
+        "verified_on": { "type": "string" }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "required": ["title", "summary", "domain", "taxonomy", "review_status", "rank"],
+      "description": "One highlighted result. Two generations exist: earlier findings carry a prose 'evidence' field, later ones carry structured 'id', 'model', 'confidence' and 'timestamp'. Both are valid; new work should emit the structured form.",
+      "properties": {
+        "title": { "type": "string" },
+        "summary": { "type": "string" },
+        "domain": { "type": "string" },
+        "taxonomy": {
+          "description": "One label, or several where a finding sits under more than one.",
+          "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }]
+        },
+        "review_status": { "type": "string" },
+        "rank": { "type": "integer", "minimum": 0 },
+        "source": { "type": "string" },
+        "evidence": { "type": "string" },
+        "id": { "type": "string" },
+        "model": { "type": "string" },
+        "confidence": {
+          "description": "The model score. SHOULD be a number. A string is accepted only because published data contains prose here ('Ecotype 1.00 Southern Resident, OrcaHello 0.97'), which is a defect: a consumer cannot compare, sort or threshold on it, and the number it describes is then recorded nowhere machine-readable. Emit a number and put the sentence in 'summary'.",
+          "oneOf": [{ "type": "number" }, { "type": "string" }]
+        },
+        "rank_score": { "type": "number" },
+        "timestamp": { "type": "string" },
+        "media": { "type": ["array", "object", "null"] }
+      }
+    },
+    "asset": {
+      "type": "object",
+      "required": ["kind", "path"],
+      "properties": {
+        "kind": { "type": "string", "enum": ["audio", "image", "video"] },
+        "path": {
+          "type": "string",
+          "description": "Relative, content-addressed, and resolving inside the bundle. An image referenced from forty cards is copied once."
+        },
+        "duration_seconds": { "type": "number", "minimum": 0 },
+        "quality": { "type": "string" },
+        "featured": { "type": "boolean" }
+      }
+    }
+  }
+}

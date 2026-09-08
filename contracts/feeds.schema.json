@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/rain-Brian/wildlife-stack/contracts/feeds.schema.json",
+  "title": "Feed registry",
+  "description": "The single source of truth for what feeds exist, whether they are worth reading, and what may be published from them. The publish rights gate reads the rights block and refuses any feed whose redistribute is not 'yes'. Infrastructure fields (which host runs a feed, which service unit) are deliberately absent from this schema: they belong in deployment configuration, not in a registry that is duplicated into a public artifact.",
+  "type": "object",
+  "required": ["version", "feeds"],
+  "additionalProperties": false,
+  "properties": {
+    "$comment": {
+      "description": "Free-form notes. Worth using: this file is read by people deciding whether a claim is licensed.",
+      "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }]
+    },
+    "version": { "type": "integer", "const": 1 },
+    "feeds": { "type": "array", "items": { "$ref": "#/$defs/feed" }, "minItems": 1 }
+  },
+  "$defs": {
+    "feed": {
+      "type": "object",
+      "required": ["feed", "camera", "label", "kind", "active", "zones", "models", "rights"],
+      "additionalProperties": false,
+      "properties": {
+        "feed": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$",
+          "description": "Operator or family, e.g. 'orcasound'. Never contains a slash."
+        },
+        "camera": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$",
+          "description": "The specific node. Unique within a feed."
+        },
+        "label": { "type": "string", "description": "Human-readable name, shown on published pages." },
+        "node": { "type": "string", "description": "Upstream operator's own identifier, if it has one." },
+        "kind": {
+          "type": "string",
+          "enum": ["hydrophone", "fixed_camera", "underwater_camera"],
+          "description": "What the feed is. Determines which models apply and how a page renders."
+        },
+        "location": {
+          "description": "Approximate position, or null where the operator publishes none. Never record finer precision than the operator does.",
+          "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/location" }]
+        },
+        "active": {
+          "type": "boolean",
+          "description": "The feed is producing usable signal. NOT 'its capture process is running'. Those are different questions and the difference has cost real data: a node can emit well-formed empty segments for days while every liveness check reports healthy. A campaign selecting 'all hydrophones' selects on this field and gets neither a dead channel nor a buried one."
+        },
+        "inactive_reason": { "type": "string" },
+        "inactive_since": { "type": "string", "format": "date" },
+        "zones": {
+          "type": "object",
+          "description": "Which lake zones this feed writes, mapped to what it writes there. Lake roots are NOT stored: they are derived as {zone}/{feed}/{camera} by the path contract. Storing them is how a watchdog came to watch a path the writers had stopped using.",
+          "minProperties": 1,
+          "additionalProperties": { "type": "string" },
+          "propertyNames": { "enum": ["raw", "sent", "prepared"] }
+        },
+        "watchdog": { "$ref": "#/$defs/watchdog" },
+        "services": {
+          "type": "array",
+          "description": "Auxiliary writers for the same camera, so a health collector can derive them rather than restating them. A hand-maintained list here drifts: when partition roots moved in the reference deployment, a hardcoded list kept watching paths that no longer existed and five of eight signals read as missing against healthy feeds.",
+          "items": { "$ref": "#/$defs/watchdog" }
+        },
+        "models": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Model identifiers that run against this feed."
+        },
+        "rights": { "$ref": "#/$defs/rights" }
+      }
+    },
+    "location": {
+      "type": "object",
+      "required": ["lat", "lon", "precision"],
+      "additionalProperties": false,
+      "properties": {
+        "lat": { "type": "number", "minimum": -90, "maximum": 90 },
+        "lon": { "type": "number", "minimum": -180, "maximum": 180 },
+        "precision": {
+          "type": "string",
+          "enum": ["exact", "approximate"],
+          "description": "Publish at the precision the operator publishes, never finer."
+        },
+        "water": { "type": "string" },
+        "source": {
+          "type": "string",
+          "description": "Where the coordinates came from, when they are not the operator's own. Say plainly if they are a nearby landmark rather than the node."
+        }
+      }
+    },
+    "watchdog": {
+      "type": "object",
+      "required": ["zone", "threshold_seconds"],
+      "additionalProperties": false,
+      "properties": {
+        "zone": { "type": "string", "enum": ["raw", "sent", "prepared"] },
+        "threshold_seconds": { "type": "integer", "minimum": 1 },
+        "unit": { "type": "string", "description": "Opaque handle for the writer. Keep deployment-specific values out of any copy of this file that is published." }
+      }
+    },
+    "rights": {
+      "type": "object",
+      "description": "Who owns the upstream media and what may be done with it. This lives in the registry rather than in prose because a fact restated in prose drifts from the fact enforced in code.",
+      "required": [
+        "holder", "source_url", "terms", "terms_url", "spdx",
+        "redistribute", "commercial_use", "derivatives_license",
+        "attribution", "attribution_url", "verified_on", "verified_by"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "holder": { "type": "string" },
+        "source_url": { "type": "string", "format": "uri" },
+        "terms": { "type": "string", "description": "The licence in words, as the operator states it." },
+        "terms_url": { "type": "string", "format": "uri" },
+        "spdx": {
+          "description": "SPDX identifier, or null where none applies. Null is a verified position, not a missing value.",
+          "oneOf": [{ "type": "null" }, { "type": "string" }]
+        },
+        "redistribute": {
+          "type": "string",
+          "enum": ["yes", "no", "unknown"],
+          "description": "May we republish media derived from this feed? 'unknown' is the default for a feed nobody has checked, and it is unpublishable. Do not set 'yes' because a feed is publicly viewable: public and reusable are different properties."
+        },
+        "commercial_use": {
+          "type": "string",
+          "enum": ["permitted", "permission_required", "prohibited", "unknown"],
+          "description": "What the rights holder permits, NOT what you happen to be doing. It stays 'permission_required' even while every use is non-commercial, because it describes their position."
+        },
+        "derivatives_license": {
+          "description": "The licence our own derived work must carry when built from this feed. Distinct from redistribute, and it is the field that decides a report's effective licence: a report takes the most restrictive of the feeds that contributed to it.",
+          "oneOf": [{ "type": "null" }, { "type": "string" }]
+        },
+        "attribution": { "type": "string" },
+        "attribution_url": { "type": "string", "format": "uri" },
+        "verified_on": { "type": "string", "format": "date" },
+        "verified_by": {
+          "type": "string",
+          "description": "What evidence the position rests on. Say plainly when it rests on published pages rather than a written grant, so nobody later mistakes the two."
+        }
+      }
+    }
+  }
+}

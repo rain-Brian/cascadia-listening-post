@@ -1,0 +1,326 @@
+{
+  "$comment": [
+    "Worked example of a feed registry, derived from a running deployment.",
+    "",
+    "Infrastructure fields are deliberately removed: which host runs a feed and which service",
+    "unit does the work are deployment facts, not registry facts. Keeping them out is what lets",
+    "this file be duplicated into a public artifact without leaking the shape of the estate.",
+    "",
+    "The rights blocks are real and are the part worth studying. Note that 'redistribute' and",
+    "'commercial_use' answer different questions, that 'derivatives_license' is what decides a",
+    "report's effective licence, and that 'verified_by' says what the position rests on rather",
+    "than merely asserting it."
+  ],
+  "version": 1,
+  "feeds": [
+    {
+      "feed": "orcasound",
+      "camera": "bush_point",
+      "location": {
+        "lat": 48.03,
+        "lon": -122.61,
+        "precision": "approximate",
+        "water": "Admiralty Inlet, off Whidbey Island"
+      },
+      "label": "Orcasound Bush Point",
+      "node": "rpi_bush_point",
+      "kind": "hydrophone",
+      "active": true,
+      "zones": {
+        "raw": "wav segments"
+      },
+      "watchdog": {
+        "zone": "raw",
+        "threshold_seconds": 600
+      },
+      "models": [
+        "orcahello-srkw"
+      ],
+      "rights": {
+        "holder": "Orcasound",
+        "source_url": "https://live.orcasound.net/listen/bush-point",
+        "terms": "CC BY-NC-SA 4.0",
+        "terms_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "spdx": "CC-BY-NC-SA-4.0",
+        "redistribute": "yes",
+        "commercial_use": "permission_required",
+        "derivatives_license": "CC-BY-NC-SA-4.0",
+        "attribution": "Orcasound",
+        "attribution_url": "https://www.orcasound.net",
+        "verified_on": "2026-08-31",
+        "verified_by": "Site-wide licence notice on orcasound.net, corroborated by registry.opendata.aws/orcasound. Orcasound asks that attribution be a hyperlink with the text 'Orcasound', and that commercial use be cleared first via info@orcasound.net."
+      }
+    },
+    {
+      "feed": "orcasound",
+      "camera": "north_sjc",
+      "location": {
+        "lat": 48.62,
+        "lon": -123.09,
+        "water": "north San Juan Channel",
+        "precision": "approximate",
+        "source": "Orcasound publishes no lat/lon for this node and names Reuben Tarte County Park as the nearest public access. These are the park's coordinates, not the hydrophone's; the node sits offshore of it in north San Juan Channel at roughly 11.5 m."
+      },
+      "label": "Orcasound North San Juan Channel",
+      "node": "rpi_north_sjc",
+      "kind": "hydrophone",
+      "active": true,
+      "zones": {
+        "raw": "wav segments"
+      },
+      "watchdog": {
+        "zone": "raw",
+        "threshold_seconds": 600
+      },
+      "models": [
+        "orcahello-srkw"
+      ],
+      "rights": {
+        "holder": "Orcasound",
+        "source_url": "https://live.orcasound.net/listen/north-sjc",
+        "terms": "CC BY-NC-SA 4.0",
+        "terms_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "spdx": "CC-BY-NC-SA-4.0",
+        "redistribute": "yes",
+        "commercial_use": "permission_required",
+        "derivatives_license": "CC-BY-NC-SA-4.0",
+        "attribution": "Orcasound",
+        "attribution_url": "https://www.orcasound.net",
+        "verified_on": "2026-08-31",
+        "verified_by": "Site-wide licence notice on orcasound.net, corroborated by registry.opendata.aws/orcasound."
+      }
+    },
+    {
+      "feed": "orcasound",
+      "camera": "orcasound_lab",
+      "location": {
+        "lat": 48.56,
+        "lon": -123.17,
+        "precision": "approximate",
+        "water": "Haro Strait, west side of San Juan Island"
+      },
+      "label": "Orcasound Lab, Haro Strait",
+      "node": "rpi_orcasound_lab",
+      "kind": "hydrophone",
+      "active": true,
+      "zones": {
+        "raw": "wav segments"
+      },
+      "watchdog": {
+        "zone": "raw",
+        "threshold_seconds": 600
+      },
+      "models": [
+        "orcahello-srkw"
+      ],
+      "rights": {
+        "holder": "Orcasound",
+        "source_url": "https://live.orcasound.net/listen/orcasound-lab",
+        "terms": "CC BY-NC-SA 4.0",
+        "terms_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "spdx": "CC-BY-NC-SA-4.0",
+        "redistribute": "yes",
+        "commercial_use": "permission_required",
+        "derivatives_license": "CC-BY-NC-SA-4.0",
+        "attribution": "Orcasound",
+        "attribution_url": "https://www.orcasound.net",
+        "verified_on": "2026-08-31",
+        "verified_by": "Site-wide licence notice on orcasound.net, corroborated by registry.opendata.aws/orcasound."
+      }
+    },
+    {
+      "feed": "orcasound",
+      "camera": "mast_center",
+      "location": {
+        "lat": 47.35,
+        "lon": -122.32,
+        "precision": "approximate"
+      },
+      "label": "Orcasound MaST Center",
+      "node": "rpi_mast_center",
+      "kind": "hydrophone",
+      "active": false,
+      "inactive_reason": "node offline upstream; acoustic signal stopped 2026-07-12, segments continued until 2026-07-17",
+      "inactive_since": "2026-07-12",
+      "zones": {
+        "raw": "wav segments"
+      },
+      "watchdog": {
+        "zone": "raw",
+        "threshold_seconds": 600
+      },
+      "models": [
+        "orcahello-srkw"
+      ],
+      "rights": {
+        "holder": "Orcasound",
+        "source_url": "https://live.orcasound.net/listen/mast-center",
+        "terms": "CC BY-NC-SA 4.0",
+        "terms_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "spdx": "CC-BY-NC-SA-4.0",
+        "redistribute": "yes",
+        "commercial_use": "permission_required",
+        "derivatives_license": "CC-BY-NC-SA-4.0",
+        "attribution": "Orcasound",
+        "attribution_url": "https://www.orcasound.net",
+        "verified_on": "2026-08-31",
+        "verified_by": "Site-wide licence notice on orcasound.net. This is the Orcasound hydrophone hosted at the MaST Center, and is a separate feed from the aquarium's YouTube camera; the two carry different rights and must not be conflated."
+      }
+    },
+    {
+      "feed": "orcasound",
+      "camera": "point_robinson",
+      "location": {
+        "lat": 47.388,
+        "lon": -122.375,
+        "precision": "approximate"
+      },
+      "label": "Orcasound Point Robinson",
+      "node": "rpi_point_robinson",
+      "kind": "hydrophone",
+      "active": false,
+      "inactive_reason": "hydrophone sediment-buried; the node streams but carries no usable signal",
+      "inactive_since": "2026-08-19",
+      "zones": {
+        "raw": "wav segments"
+      },
+      "watchdog": {
+        "zone": "raw",
+        "threshold_seconds": 600
+      },
+      "models": [
+        "orcahello-srkw"
+      ],
+      "rights": {
+        "holder": "Orcasound",
+        "source_url": "https://live.orcasound.net/listen/port-townsend",
+        "terms": "CC BY-NC-SA 4.0",
+        "terms_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "spdx": "CC-BY-NC-SA-4.0",
+        "redistribute": "yes",
+        "commercial_use": "permission_required",
+        "derivatives_license": "CC-BY-NC-SA-4.0",
+        "attribution": "Orcasound",
+        "attribution_url": "https://www.orcasound.net",
+        "verified_on": "2026-08-31",
+        "verified_by": "Site-wide licence notice on orcasound.net. source_url is the node's listen page and has not been individually confirmed; the licence is site-wide and does not depend on it."
+      }
+    },
+    {
+      "feed": "nps",
+      "camera": "sunrise_mountain",
+      "location": null,
+      "label": "NPS Sunrise Mountain",
+      "kind": "fixed_camera",
+      "active": true,
+      "zones": {
+        "raw": "one-minute snapshots",
+        "sent": "rtmps ts segments",
+        "prepared": "email drafts"
+      },
+      "watchdog": {
+        "zone": "sent",
+        "threshold_seconds": 900
+      },
+      "services": [
+        {
+          "zone": "prepared",
+          "threshold_seconds": 7200
+        }
+      ],
+      "models": [
+        "megadetector-nps"
+      ],
+      "rights": {
+        "holder": "National Park Service, Mount Rainier National Park",
+        "source_url": "https://www.nps.gov/webcams-mora/SunriseMtn.jpg",
+        "terms": "US Government work, public domain (17 U.S.C. 105)",
+        "terms_url": "https://www.nps.gov/aboutus/disclaimer.htm",
+        "spdx": null,
+        "redistribute": "yes",
+        "commercial_use": "permitted",
+        "derivatives_license": null,
+        "attribution": "National Park Service, Mount Rainier National Park",
+        "attribution_url": "https://www.nps.gov/mora/learn/photosmultimedia/webcams.htm",
+        "verified_on": "2026-08-31",
+        "verified_by": "The park's own webcam page labels these 'NPS Webcam Photos' and the nps.gov disclaimer places NPS-created material in the public domain unless otherwise indicated; nothing indicates otherwise for this camera. NPS notes some site content is partner-owned and asks the user to confirm, so this is 'verified as far as the published pages go' rather than a written grant. Attribution is requested, not required, and is given anyway. The NPS arrowhead is a protected trademark and must never appear on the site."
+      }
+    },
+    {
+      "feed": "nps",
+      "camera": "west",
+      "location": null,
+      "label": "NPS West",
+      "kind": "fixed_camera",
+      "active": true,
+      "zones": {
+        "raw": "one-minute snapshots",
+        "sent": "rtmps ts segments",
+        "prepared": "email drafts"
+      },
+      "watchdog": {
+        "zone": "sent",
+        "threshold_seconds": 900
+      },
+      "services": [
+        {
+          "zone": "prepared",
+          "threshold_seconds": 7200
+        }
+      ],
+      "models": [
+        "megadetector-nps"
+      ],
+      "rights": {
+        "holder": "National Park Service, Mount Rainier National Park",
+        "source_url": "https://www.nps.gov/webcams-mora/west.jpg",
+        "terms": "US Government work, public domain (17 U.S.C. 105)",
+        "terms_url": "https://www.nps.gov/aboutus/disclaimer.htm",
+        "spdx": null,
+        "redistribute": "yes",
+        "commercial_use": "permitted",
+        "derivatives_license": null,
+        "attribution": "National Park Service, Mount Rainier National Park",
+        "attribution_url": "https://www.nps.gov/mora/learn/photosmultimedia/webcams.htm",
+        "verified_on": "2026-08-31",
+        "verified_by": "Same basis as sunrise_mountain: the park's webcam page labels these 'NPS Webcam Photos' and the nps.gov disclaimer places NPS-created material in the public domain unless otherwise indicated. The NPS arrowhead is a protected trademark and must never appear on the site."
+      }
+    },
+    {
+      "feed": "youtube",
+      "camera": "mast_center_aquarium",
+      "location": {
+        "lat": 47.35,
+        "lon": -122.32,
+        "precision": "approximate"
+      },
+      "label": "MaST Center Aquarium",
+      "kind": "underwater_camera",
+      "active": true,
+      "zones": {
+        "sent": "rtmps ts segments"
+      },
+      "watchdog": {
+        "zone": "sent",
+        "threshold_seconds": 900
+      },
+      "models": [
+        "yolo-fish"
+      ],
+      "rights": {
+        "holder": "Highline College, MaST Center Aquarium",
+        "source_url": "https://www.youtube.com/@highlinemastcenteraquarium/live",
+        "terms": "YouTube Standard Licence; all rights reserved by the channel owner",
+        "terms_url": "https://www.youtube.com/static?template=terms",
+        "spdx": null,
+        "redistribute": "yes",
+        "commercial_use": "unknown",
+        "derivatives_license": null,
+        "attribution": "MaST Center Aquarium, Highline College",
+        "attribution_url": "https://mast.highline.edu/",
+        "verified_on": "2026-08-31",
+        "verified_by": "AUTHORISED BY THE OPERATOR OF THIS PROJECT, NOT BY A WRITTEN GRANT. Recorded plainly because the distinction matters if anyone asks later. The YouTube stream carries the Standard Licence by default, which reserves all rights to Highline College, and no separate written permission has been obtained. Brian Rain authorised publication on 2026-08-31 on the basis of the existing MaST Center partnership (ADO Epics 479407 and 526899). The published pages embed roughly 399 annotated frames extracted from the stream, so this is redistribution of Highline's footage and not merely commentary on it. If Highline objects, unpublish first and discuss after: set redistribute back to 'no', delete the affected report directories, and republish the index."
+      }
+    }
+  ]
+}

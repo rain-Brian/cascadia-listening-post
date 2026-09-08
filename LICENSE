@@ -1,0 +1,66 @@
+Licensing for this repository
+=============================
+
+Two answers, because prose and configuration are different things.
+
+
+1. Prose
+--------
+
+Documentation, methodology, architecture description and the structure of these
+documents are licensed:
+
+    Creative Commons Attribution 4.0 International (CC BY 4.0)
+    https://creativecommons.org/licenses/by/4.0/
+
+Attribution: Wildlife Stack,
+https://github.com/rain-Brian/wildlife-stack
+
+
+2. Configuration, schemas and scripts
+-------------------------------------
+
+Everything under contracts/, deploy/ and tools/, and any code sample embedded
+in the prose, is licensed:
+
+    MIT License
+
+    Copyright (c) 2026 Brian Rain
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+
+
+3. What these licences do not grant
+-----------------------------------
+
+Neither licence grants any right in:
+
+  - The upstream media feeds described here. Those belong to their operators
+    and carry their own terms. See RIGHTS.md.
+
+  - The detection models named here. This repository distributes no model code
+    and no weights. Obtain each from its upstream source under its own licence,
+    which for some of them is copyleft and for others restricts categories of
+    use. See LIMITATIONS.md.
+
+  - The reports published by any deployment of this system. Each carries the
+    licence its sources impose, computed per report rather than declared once.
+
+Following this documentation does not clear rights. Clearing rights is per feed
+and per use, and it is your job.
