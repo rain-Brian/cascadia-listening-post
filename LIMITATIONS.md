@@ -91,16 +91,38 @@ the same sweep.
 Fix this at the start rather than inheriting it. It is much cheaper before you have results to
 reconcile.
 
-## Known defects in the reference deployment's own data
+## Three defects worth designing against
 
-Two, both visible in published `report.json` files, both unfixed. Your schemas should be stricter
-than these:
+All three were found in one published report in the reference deployment, all passed every gate
+that existed at the time, and all are now fixed there and caught by the gate. Build the checks
+in from the start and you will not meet them.
 
-- **`window.usable_hours` is null in 11 of 14 reports.** Video reports count segments instead,
-  which is legitimate, but the methodology promises coverage and the manifest does not always
-  carry it.
-- **`featured_findings[].confidence` sometimes holds prose** rather than a number, so it cannot be
-  sorted or thresholded, and the number it describes is recorded nowhere machine-readable.
+- **A report published without run directories carried no coverage.** The page builder supplied
+  a window count, which satisfied the "has a coverage denominator" check, so nothing noticed that
+  the period and the hours were null. For a duration-bearing source the hours are exactly
+  derivable, so require them. **Do not** require them for stills or video: those units have no
+  fixed duration, and multiplying 10,140 one-minute snapshots by a 30-second audio constant
+  yields 84.5 "usable hours", which means nothing and would be a headline figure.
+- **Model scores were recorded as prose.** `"Ecotype 1.00 Southern Resident, OrcaHello 0.97."`
+  cannot be compared, sorted or thresholded, and the numbers it describes are then machine-readable
+  nowhere. Validate that a confidence is a number in 0..1. Note that the sentence held *two*
+  model scores and the field holds one, so a repair has to preserve the sentence somewhere or it
+  loses a published figure.
+- **The report declared one site and covered three**, naming the other two throughout the page.
+  This is an attribution failure, and since `sites` is what the rights gate is fed, a feed with
+  different terms would have produced the wrong licence. Check declared sites against per-camera
+  counts, which is a second reason to derive coverage from the run.
+
+**Do not check declared sites against the page prose.** That was tried and was wrong four times
+in five: these pages carry a "quietly missing" section naming nodes that were offline, which is
+the coverage honesty the methodology asks for, and flagging those pushes an operator to credit a
+feed that contributed nothing.
+
+One defect in that report remains open, and it is the interesting one: its published detection
+count matches no definition reproducible from the run, at any site or in total. That is exactly
+why a manifest should carry a `positive_definition` field saying what was counted. Two obvious
+senses, "window with a positive prediction" and "window with at least one positive segment",
+differ by 40% at one station in this data.
 
 ## Absence of detections is not absence of animals
 
