@@ -59,10 +59,13 @@ Each is a section of [REBUILD.md](REBUILD.md), with commands and a verification 
 ## Checking this repository
 
 ```sh
-python3 tools/check_redaction.py .                   # names no real infrastructure
-python3 tools/test_redaction.py                      # the rules still catch real leaks
-PUBLISHED_SITE=<a-site-repo> bash tools/verify.sh    # everything, including schemas
+python3 tools/check_redaction.py .    # names no real infrastructure
+python3 tools/test_redaction.py       # the rules still catch real leaks
+bash tools/verify.sh                  # everything, including schemas
 ```
+
+Set `PUBLISHED_SITE` to a site repository first, and `verify.sh` will also check the report
+schemas against pages that actually shipped.
 
 The schemas are validated against a running deployment rather than written from memory.
 
