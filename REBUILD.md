@@ -208,33 +208,61 @@ Detail: [reference/METHODS.md](reference/METHODS.md).
 ## Stage 8: reports and publishing
 
 ```
-bundle  ->  rights gate  ->  redaction gate  ->  site repository
+build  ->  rights gate  ->  redaction gate  ->  quality gate  ->  index  ->  restyle  ->  verify site
 ```
 
-Both gates run over the **finished bundle in a temporary directory**. A refused publish leaves
+The gates run over the **finished bundle in a temporary directory**. A refused publish leaves
 nothing behind.
 
-1. Build pages from run artifacts.
-2. **Emit a stable card identifier from every page builder**, from the first one.
-3. **Compute the licence.** Most restrictive of any contributing feed. Never a site-wide default.
-4. **Compute the coverage.** Read from run artifacts, never typed.
-5. **Rights gate**: refuse any feed whose `redistribute` is not `yes`. No override flag.
-6. **Redaction gate**: content scan for infrastructure detail. Overrides take a specific literal
-   string, never a rule, and every use is recorded in the published artifact.
-7. Verify every local reference resolves *inside* the bundle, and refuse if any does not.
-8. Publish, then regenerate the index, then restyle. In that order. Restyle is not optional.
-9. Stage the change and stop. A person pushes.
+1. **Build each report with the builder for its kind**, from run artifacts. A builder that only
+   accounts for runs is not a detection builder.
+2. **Make every screening step a builder depends on mandatory**, and fail the report when it
+   fails. A skipped optional screen counts everything as clean and still prints its tiles.
+3. **Emit a stable card identifier from every page builder**, from the first one.
+4. **Choose evidence across the window**: the strongest card from each day first, then the best
+   of the rest. Nothing is promoted over a stronger card except to give a day its first card.
+5. **Say what did not run.** If a model in the chain did not run, the page says so ("ecotype not
+   assessed") and ranks by the model that did.
+6. **Compute the licence.** Most restrictive of any contributing feed. Never a site-wide default.
+7. **Compute the coverage** from run artifacts, never typed, in the source's own unit: hours for
+   audio, frames for stills, clips for video. Hours for video only from recorded clip durations.
+8. **Resolve model names through one registry**, and fill licence, lineage and caveat from it.
+   Record the full code commit, or null.
+9. **Rights gate**: refuse any feed whose `redistribute` is not `yes`. No override flag.
+10. **Redaction gate**: content scan for infrastructure detail. Overrides take a specific literal
+    string, never a rule, and every use is recorded in the published artifact.
+11. Verify every local reference resolves *inside* the bundle, and refuse if any does not. The
+    one exception is the site's shared stylesheet, which the site owns and checks.
+12. **Quality gate**: a recognised review status; a positive count in the manifest with a
+    definition of what it counts; evidence on the page or a stated waiver; every known contaminant
+    at the declared sites addressed by name; declared sites matching per-camera counts; numeric
+    confidences.
+13. Publish, then regenerate the index, then restyle, then verify the whole site. In that order.
+    Restyle is not optional. A failing verify stops the change from being proposed.
+14. **Stage every file that sequence writes**, from one named list tested against what the steps
+    produce, and stop. A person pushes.
+
+> One report in the reference deployment published a station rate of 21.8% where the model's own
+> verdict gave 15.34%, which put the station inside its measured floor's interval rather than
+> above it. The figure existed only in the page's prose, so nothing could check it.
 
 > Retrofitting the card identifier is what currently blocks the reference deployment's review
 > backlog: only one of several builders emits it, so pages from the others cannot be published as
 > reviewed even though the review layer, verdict parser and export path all exist.
+
+Test real builder output through the real gates. The scheduled path's tests stubbed the builder
+and the publish step, and two refusals surfaced only when real output first went through them.
+
+To correct a report that is already public, retire it; do not edit it. See
+[reference/PUBLISHING.md](reference/PUBLISHING.md#correcting-a-public-report).
 
 ```sh
 python3 tools/check_redaction.py <bundle-dir>
 ```
 
 **Verify:** publish a report built from a feed marked `redistribute: no` and confirm refusal. Put
-a hostname in a page caption and confirm refusal. Both must fail closed.
+a hostname in a page caption and confirm refusal. Publish a detection report with no
+`positive_definition` and confirm refusal. All three must fail closed.
 
 Detail: [reference/PUBLISHING.md](reference/PUBLISHING.md).
 
@@ -254,8 +282,32 @@ Cloudflare Pages: [deploy/cloudflare/](deploy/cloudflare/#5-the-report-site-on-p
 Keep the site repository generated, and say so inside it, or somebody will send a pull request
 that the next publish silently overwrites.
 
+What the generator must get right:
+
+1. **Order reports by when their data is from**, not when they were published. Take the period
+   from the manifest window; failing that, a date in the title, series name or id; failing that,
+   the publish date. Record which, and mark anything not from the window as inferred. An end
+   stamped at midnight is exclusive.
+2. **Use absolute dates in headings.** "This week" is wrong tomorrow, and fails the regeneration
+   check with it.
+3. **Put a shared nav on every page**, stamped by restyle so it reaches pages whose builder is
+   gone. Write every link relative to the page's own depth.
+4. **Disclose the AI tooling on every page.** A shared link lands a reader on a report, not the
+   methods page.
+5. **No bare detection count on a list row.** Report families count positives differently, and
+   a count means nothing without its definition beside it.
+6. **One set of totalling rules wherever a total appears**: days as a union, and a report wholly
+   inside another over the same sites counted once.
+7. Join site labels with a separator that cannot occur inside a label.
+
+> Every report link on the reference deployment's source hub pages returned 404: the hubs sit one
+> level down and rendered cards whose URLs were written relative to the site root.
+
 **Verify:** clone the site repository to a clean machine, serve it statically, confirm every
-image, clip and stylesheet loads.
+image, clip and stylesheet loads. Then run a site verifier: the quality gate over every report, a
+full regeneration diffed against the repository (with generated timestamps normalised in both the
+JSON and the rendered HTML), internal links, the disclosure on every page, and reserved hub names.
+Run restyle twice; the second run changes nothing.
 
 ---
 
