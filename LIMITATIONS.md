@@ -2,18 +2,32 @@
 
 Read this before [REBUILD.md](REBUILD.md). Every item was discovered the expensive way.
 
-## One model cannot be obtained
+## The ecotype model's terms are split
 
-The ecotype classifier (`birdnet07`) has **no recorded licence and no retrieval URL**. It cannot
-be re-fetched from a clean clone of anything.
+The ecotype classifier is model 7 of the 9 call-type-balancing variants trained in Palmer et al.
+2026, *Population-Level Acoustic Classification of Salish Sea Killer Whales*, Marine Mammal
+Science 42(1) e70126. The authors released the weights, training data and example code on
+Zenodo, record [10.5281/zenodo.18209486](https://doi.org/10.5281/zenodo.18209486). Verify the
+file digest on download and refuse a mismatch.
 
-**Effect:** call-presence detection works, so you can answer "was a killer whale call present in
-this window". You cannot answer "which population is this call more consistent with". Reports
-distinguishing Southern Resident from Bigg's are out of reach.
+Three sets of terms touch it, and they are easy to conflate:
+
+- **The model:** CC BY 4.0, as the authors released it. Attribution is owed to Palmer et al.
+- **The article:** CC BY-NC-ND 4.0. That binds the paper's text, not the model.
+- **The base framework:** BirdNET's own models are CC BY-NC-SA 4.0, and a strict reading of
+  ShareAlike carries those terms to a derivative. That tension is the authors' to resolve.
+  Non-commercial output that already carries share-alike terms satisfies either reading.
+
+**Its authors report that it degrades on hydrophone systems it was not trained on.** Measure its
+floors at your own sites before a page says which population a call is more consistent with.
 
 **Do not** substitute another classifier and keep the same report language. Treat ecotype as a
 separate problem with its own model selection, its own measured floors, and its own licence
-review.
+review. When it did not run, the page says "ecotype not assessed" rather than describing a
+classifier that never saw the audio.
+
+> The reference deployment ran this model with no recorded licence or retrieval URL until it was
+> traced back to its paper. Record the source, licence and digest when you adopt a model.
 
 ## Model licences bind different things
 
@@ -22,7 +36,7 @@ review.
 | YOLO-Fish | GPL-3.0 | the code; copyleft reaches what you distribute |
 | OrcaHello | RAIL, conservation-oriented | the **use**; restrictions can follow outputs |
 | MegaDetector | MIT | the code, permissively |
-| Ecotype classifier | unknown | nothing safely |
+| Ecotype classifier | CC BY 4.0; base framework CC BY-NC-SA 4.0 | attribution, and see above |
 
 The RAIL licence is the one people get wrong. It is not permissive-with-paperwork. Read it before
 deployment, not after.
@@ -81,12 +95,19 @@ mechanism reaching every page regardless of what produced it. If you build a pub
 either keep every builder or accept you will need such a step. **Do not assume you can re-render
 your archive from manifests.**
 
+Six video reports also carry a null window: their coverage was never derived from the video runs,
+and those runs are gone. The site shows their dates as inferred and says so.
+
 ## Reproducibility is not free
 
 The reference deployment does not pin dependencies with `==` or carry a lockfile, pins one model
 revision to a moving branch, sets no seeds, and spans three virtual environments for a single
 finalize step. Two machines provisioned a week apart resolve different tensor library versions for
 the same sweep.
+
+Its inference hosts also run a hand-copied code tree rather than a checkout, and it drifted from
+main: a module missing, an argument silently ignored, identifiers never emitted. Stamp every
+deployment with its commit, on every host, and refuse to start without one.
 
 Fix this at the start rather than inheriting it. It is much cheaper before you have results to
 reconcile.
@@ -100,9 +121,10 @@ in from the start and you will not meet them.
 - **A report published without run directories carried no coverage.** The page builder supplied
   a window count, which satisfied the "has a coverage denominator" check, so nothing noticed that
   the period and the hours were null. For a duration-bearing source the hours are exactly
-  derivable, so require them. **Do not** require them for stills or video: those units have no
-  fixed duration, and multiplying 10,140 one-minute snapshots by a 30-second audio constant
-  yields 84.5 "usable hours", which means nothing and would be a headline figure.
+  derivable, so require them. **Do not** derive hours for stills: multiplying 10,140 one-minute
+  snapshots by a 30-second audio constant yields 84.5 "usable hours", which means nothing and
+  would be a headline figure. Video hours come only from the clip durations the run recorded; a
+  run that recorded none yields a window and no hours.
 - **Model scores were recorded as prose.** `"Ecotype 1.00 Southern Resident, OrcaHello 0.97."`
   cannot be compared, sorted or thresholded, and the numbers it describes are then machine-readable
   nowhere. Validate that a confidence is a number in 0..1. Note that the sentence held *two*
@@ -118,11 +140,15 @@ in five: these pages carry a "quietly missing" section naming nodes that were of
 the coverage honesty the methodology asks for, and flagging those pushes an operator to credit a
 feed that contributed nothing.
 
-One defect in that report remains open, and it is the interesting one: its published detection
-count matches no definition reproducible from the run, at any site or in total. That is exactly
-why a manifest should carry a `positive_definition` field saying what was counted. Two obvious
+The same report had a fourth problem, and it is the instructive one: its published detection
+count matches no definition reproducible from the run, at any site or in total. Two obvious
 senses, "window with a positive prediction" and "window with at least one positive segment",
-differ by 40% at one station in this data.
+differ by 40% at one station in this data. That is why a manifest carries a `positive_definition`
+saying what was counted, and why a detection report without one is refused.
+
+Where the run is gone, backfill the definition and **record where it came from**:
+`verified_from_run`, `verified_from_page`, `inferred_from_key`, or `not_recoverable`. That report
+is marked `not_recoverable` and gains no numbers. A made-up definition is worse than an absent one.
 
 ## Absence of detections is not absence of animals
 

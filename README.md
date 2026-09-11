@@ -12,8 +12,8 @@ instruction set for building that. The reference deployment publishes at
 
 ## Before you start
 
-Read [LIMITATIONS.md](LIMITATIONS.md) first. One model cannot be obtained at all, two feed types
-are not freely reusable, and two of the tiers do not run on serverless platforms. Fifteen
+Read [LIMITATIONS.md](LIMITATIONS.md) first. Two feed types are not freely reusable, one model
+sits under three sets of terms, and two of the tiers do not run on serverless platforms. Fifteen
 minutes there will save you a week.
 
 You need:
