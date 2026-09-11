@@ -47,6 +47,7 @@
     },
     "reports": {
       "type": "array",
+      "description": "Ordered newest data first: by period.end descending, then period.start, with the members of a series kept contiguous in their stated order. Publish date does not move a report, so a backfill published today about a week last month sits with last month.",
       "items": {
         "type": "object",
         "required": ["report_id", "title", "generated_at", "domains", "review_status", "models"],
@@ -58,6 +59,16 @@
           "coverage": {
             "type": ["string", "null"],
             "description": "Coverage as a phrase, because the unit differs by domain: hours of usable signal for audio, source segments or frames for video. Rendered, not computed on."
+          },
+          "period": {
+            "type": "object",
+            "description": "When the report's data is from, as distinct from generated_at, which is when it was published. This is the landing page's sort key. source says where the dates came from: the manifest window, or a date read from the title, series name or report id when the window is null, or the publish date as a last resort. Anything other than window is shown as inferred.",
+            "required": ["start", "end", "source"],
+            "properties": {
+              "start": { "type": ["string", "null"], "format": "date" },
+              "end": { "type": ["string", "null"], "format": "date" },
+              "source": { "type": "string", "enum": ["window", "title", "series", "report_id", "published", "none"] }
+            }
           },
           "review_status": { "type": "string" },
           "models": { "type": "array" }
