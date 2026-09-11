@@ -51,6 +51,9 @@ Degrade to printing the raw deterministic findings when the model is unavailable
 right failure mode: the evidence was already computed by a deterministic step, so losing the
 agent loses the summary, not the signal.
 
+A hook on an agent's tools sees that agent's actions and nothing else. It cannot see a scheduled
+job, so an unattended runner calls the same preflight itself.
+
 ## Split evidence from interpretation
 
 Every agent is two halves:

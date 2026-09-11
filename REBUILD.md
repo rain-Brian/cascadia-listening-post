@@ -160,6 +160,19 @@ Lease compute, run, tear down. **This tier does not run on Workers.**
 4. Set and record seeds.
 5. Write detections through the contract, validated on write.
 6. Idempotency keyed on `(model_name, model_version, source_blob)`.
+7. **Resolve each model's concurrency in one place**, and route every call path through it.
+8. **Measure throughput on the hardware you will run on** before sizing a sweep. Laptop timings
+   do not transfer.
+9. **Deploy with provenance.** Refuse to stage a dirty tree or a commit not on main, stamp the
+   commit into the deployment, and print it on every run. Compute hosts get their code the same
+   way; a hand-copied tree drifts.
+10. **Retry compute start on the provider's transient errors**, per host. One host that cannot
+    start must not drop the others.
+11. **Survive a dropped session.** Keepalives on remote sessions, and poll each run's own status
+    artifact. The verdict follows the artifact, not the session.
+
+> A scheduled path bypassed the concurrency helper the manual path used: four jobs of fourteen
+> workers each on a sixteen-core host exhausted memory, and both hosts became unreachable.
 
 **Teardown is the expensive part to get wrong:**
 
@@ -169,6 +182,8 @@ Lease compute, run, tear down. **This tier does not run on Workers.**
 - Require *live* evidence of work to hold a machine past expiry. If liveness cannot be read,
   **hold and alert** rather than reclaim.
 - If the cloud is unreachable, raise. An empty list looks like success.
+- **Teardown after a failure goes through the same guards.** Never stop a machine by name: on
+  shared capacity that can stop somebody else's work.
 
 > In the reference deployment teardown lived inside the campaign runner and consulted that
 > campaign's reconciliation, so the only code that released a machine was code that does not run
@@ -177,7 +192,8 @@ Lease compute, run, tear down. **This tier does not run on Workers.**
 
 **Verify:** run the same input twice with the same idempotency key, confirm no duplicate work.
 Build from the lockfile on two clean hosts, confirm identical resolved dependencies and identical
-output. Let a lease expire and confirm reclamation without a successful campaign.
+output. Let a lease expire and confirm reclamation without a successful campaign. Drop a remote session
+mid-run and confirm the run's verdict still comes from its artifacts.
 
 ---
 
@@ -190,6 +206,11 @@ Before publishing anything as a detection.
 3. Store floors with the date measured.
 4. **A label with no measured floor gets no card**, however confident the model was.
 5. **Never pool floors across sites.**
+6. **Test separability, not only position.** A rate that cannot be told apart from the floor
+   licenses nothing.
+7. **Screen known contaminants before counting.** Keep a registry per site with the measurement
+   that identified each one, run the screen as a required step, and state on every report at that
+   site what was done about each.
 
 > Pooling lets a busy site clear a threshold on its own volume and then license claims at a quiet
 > site that never earned one. Both of these rules exist because the reference deployment broke
@@ -325,6 +346,30 @@ Only now, and start with the simple version.
    corruption fail loudly.
 5. A status field that can express failure. If the only value it ever takes is `ok`, it is not a
    status.
+6. **Record intent before anything else.** One ledger entry per scheduled unit (a source-day,
+   say), written before any gate runs: `expected`, `running`, `complete`, `failed` or `deferred`,
+   the time it fell due kept across updates, an attempt count, atomic writes.
+7. **Watch the inference tier, not only capture.** A unit that was due and never ran, or failed
+   and was not retried, is loud but does not stop today's run, which is how the backlog shrinks.
+8. **A rehearsal runs every gate**; only the actions are guarded. It writes a rehearsal ledger,
+   never the production one.
+9. **Unreachable is not empty.** A cloud query that fails must not read as "nothing running".
+   When the run is live, hold.
+10. **A check for other busy work excludes its own process group**, or the scheduled run holds on
+    itself.
+11. **Capture a command's exit status directly.** A compound statement's status is not its
+    command's, and under `set -e` a clean check that exits non-zero (`grep -c` finding nothing)
+    kills the run.
+12. **Discover the staged file list** rather than writing it by hand, and verify the deployment
+    from the directory the scheduler will run it in.
+13. A lock records its holder and reclaims a dead one.
+14. **Survive host sleep** by polling artifacts, and schedule for when the host is awake.
+15. Run health checks in gating mode, so the scheduler records a failure as a failure.
+
+> On one date every campaign failed at dispatch and eighteen job-days went unprocessed while every
+> existing rule reported healthy, because every rule watched capture. A rehearsal that skipped the
+> gates hid a clean health check that would have aborted every live run; another wrote "complete"
+> into the production ledger for a day that never ran.
 
 **Alerts as code**, and split per service:
 
@@ -336,7 +381,12 @@ Add a rule that fires when any alert instance has been active beyond a threshold
 dead man for the dead man.
 
 **Verify:** stop the health collector and confirm a dead-man alert fires. Take one service down,
-then a second, and confirm the second produces its own notification.
+then a second, and confirm the second produces its own notification. Run a rehearsal and confirm
+every gate executed and the production ledger is unchanged. Then watch one live run end to end
+before enabling the schedule.
+
+> The reference deployment's first live scheduled run took 15h20m, completed four of six
+> source-days, and found defects in the seams between components that no test reached.
 
 ---
 
@@ -362,8 +412,9 @@ Detail: [reference/AGENTS.md](reference/AGENTS.md).
 
 ## The failure mode to watch for throughout
 
-Across three separate incidents in the reference deployment, the same thing happened: **the fix
+Across four separate incidents in the reference deployment, the same thing happened: **the fix
 existed and was not in the path that executes.** Merged to main but not deployed to the running
 copy. Scheduled in the cloud but disabled. Built and tested but left in an unmerged branch.
+Merged and deployed, but the compute hosts ran a hand-copied tree without it.
 
 Building it is not shipping it. Check what is actually running.
