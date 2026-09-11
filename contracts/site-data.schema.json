@@ -19,14 +19,14 @@
     },
     "metrics": {
       "type": "object",
-      "description": "Summed from the report records, and rendered directly as the landing page tiles. Derive them; never maintain them.",
+      "description": "Derived from the report records and rendered directly as the landing page tiles. Derive them; never maintain them. Any source hub page that shows totals must apply the same rules, or a hub and the landing page disagree while reading the same manifests.",
       "required": ["reports", "featured", "reviewed", "usable_hours", "days_covered"],
       "properties": {
         "reports": { "type": "integer", "minimum": 0 },
         "featured": { "type": "integer", "minimum": 0 },
         "reviewed": { "type": "integer", "minimum": 0, "description": "Reports a person has judged, as distinct from published." },
-        "usable_hours": { "type": "number", "minimum": 0, "description": "Sums only reports that record an hours figure. Reports whose coverage is counted another way contribute nothing here, so this is a floor rather than a total." },
-        "days_covered": { "type": "integer", "minimum": 0 }
+        "usable_hours": { "type": "number", "minimum": 0, "description": "Sums only reports that record an hours figure, and a report wholly inside another over the same sites contributes nothing, because its hours are already counted. Hours cannot be unioned the way days are: usable_hours is a sum over nodes, not a duration. Reports whose coverage is counted another way contribute nothing here, so this is a floor rather than a total." },
+        "days_covered": { "type": "integer", "minimum": 0, "description": "Distinct calendar days that any report carries data for. A union, not a sum: four reports covering the same day count it once." }
       }
     },
     "featured_findings": {

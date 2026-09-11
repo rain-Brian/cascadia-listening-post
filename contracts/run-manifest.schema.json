@@ -16,7 +16,7 @@
     "status": {
       "type": "string",
       "enum": ["running", "ok", "failed", "partial", "deferred"],
-      "description": "A status that can express failure. If the only value your runner ever writes is 'ok', it is not a status. 'deferred' is distinct from both success and failure: the run did not produce a report and that was the correct outcome, because the question it would have answered was unresolved. A scheduler should retry a deferred run, not record the day as done."
+      "description": "A status that can express failure. If the only value your runner ever writes is 'ok', it is not a status. Write 'running' before the work starts, not after it ends, so a run that dies partway reads as attempted rather than untouched. 'deferred' is distinct from both success and failure: the run did not produce a report and that was the correct outcome, because the question it would have answered was unresolved. A scheduler should retry a deferred run, not record the day as done."
     },
     "requested": {
       "type": "object",
@@ -29,14 +29,23 @@
     },
     "completed": {
       "type": "object",
-      "description": "What was actually processed. The difference between this and 'requested' is the coverage gap, and stating it is what stops a quiet day reading as an unrecorded one.",
+      "description": "What was actually processed. The difference between this and 'requested' is the coverage gap, and stating it is what stops a quiet day reading as an unrecorded one. Coverage is what was watched, not what was found: record every artifact read, including those with no detections.",
       "properties": {
         "artifacts_seen": { "type": "integer", "minimum": 0 },
         "artifacts_processed": { "type": "integer", "minimum": 0 },
         "artifacts_failed": { "type": "integer", "minimum": 0 },
         "artifacts_unparsable": { "type": "integer", "minimum": 0 },
         "usable_hours": { "type": ["number", "null"], "minimum": 0 },
-        "by_camera": { "type": "object", "additionalProperties": { "type": "integer" } }
+        "source_durations_seconds": {
+          "type": "object",
+          "additionalProperties": { "type": "number", "minimum": 0 },
+          "description": "Video runs: the duration of every clip read, keyed by clip name. A video run's hours are derived from these and from nothing else. A run that did not record them yields dates from the clip names and no hours, never an estimate."
+        },
+        "by_camera": {
+          "type": "object",
+          "additionalProperties": { "type": "integer" },
+          "description": "Keyed by the feed registry's camera id, never a display label. A report checks these keys against the sites it declares, and a label in place of an id refuses a correct report."
+        }
       }
     },
     "detections_written": { "type": "integer", "minimum": 0 },
