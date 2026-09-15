@@ -10,6 +10,10 @@ The gates run over the **finished bundle in a temporary directory**. A refused p
 nothing behind, which matters because a half-written bundle in the site repository gets committed
 by the next `git add -A` and never looked at again.
 
+Gate 4 below is not in that line, and that is the point: what may be shown of the people in a
+frame is decided in the builder, before a bundle exists. A gate that ran at publish time would be
+deciding it too late, because by then the crop has already been written into the bundle.
+
 ## Gate 1: rights
 
 Refuses any feed whose `redistribute` is not `yes`. **No override flag.** A gate that can be
@@ -68,6 +72,28 @@ provenance field; the site marks that report's dates as inferred.
 
 Keep known contaminants in a registry per site, each with the measurement that identified it and
 when. Apply the screen as a required build step, not an option.
+
+## Gate 4: who is in the frame
+
+Detecting something and publishing it are separate decisions, and the second one is not about
+the detector.
+
+**People and vehicles are counted and never shown.** The count goes in the manifest, as
+`withheld_people` and `withheld_vehicles`, so the page is honest about what the detector found.
+The crop does not, because these are public cameras and the people in front of them did not
+choose to be published. Vehicles go with them: a plate is an identifier.
+
+The original code published every crop, with a comment arguing that people are the evidence for
+what a detector does when no animal is present. That reasoning is about the detector and ignores
+who is in the frame.
+
+**Partition before rendering, not at render time.** The render step is usually also what copies a
+crop into the published bundle, so filtering late leaves the file in the bundle with nothing
+pointing at it. A test should assert the asset directory stays empty.
+
+**This does not undo itself.** Removing a crop from the site does not remove it from the site
+repository's history, and a page already fetched is already fetched. The decision that matters is
+the one made before publishing.
 
 ## Three things are computed, not stated
 

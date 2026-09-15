@@ -170,9 +170,18 @@ Lease compute, run, tear down. **This tier does not run on Workers.**
     start must not drop the others.
 11. **Survive a dropped session.** Keepalives on remote sessions, and poll each run's own status
     artifact. The verdict follows the artifact, not the session.
+12. **Record what the detector actually read.** Input size in pixels, and the confidence
+    threshold, onto the model entry in every report. Both change what the report contains and
+    neither is recoverable from the output.
 
 > A scheduled path bypassed the concurrency helper the manual path used: four jobs of fourteen
 > workers each on a sixteen-core host exhausted memory, and both hosts became unreachable.
+
+> Five camera reports were published from a detector reading frames at 640 while the recorded
+> commit named one containing the fix that raised it to 1280. Every one passed every gate,
+> because `model_version` is the same string at both resolutions and the figure existed only on
+> the compute host. It was found by reading a field by hand, which is not a check. Raising the
+> resolution then found animals the earlier pass had missed, including a pair of bears.
 
 **Teardown is the expensive part to get wrong:**
 
@@ -244,23 +253,35 @@ nothing behind.
    of the rest. Nothing is promoted over a stronger card except to give a day its first card.
 5. **Say what did not run.** If a model in the chain did not run, the page says so ("ecotype not
    assessed") and ranks by the model that did.
-6. **Compute the licence.** Most restrictive of any contributing feed. Never a site-wide default.
-7. **Compute the coverage** from run artifacts, never typed, in the source's own unit: hours for
-   audio, frames for stills, clips for video. Hours for video only from recorded clip durations.
-8. **Resolve model names through one registry**, and fill licence, lineage and caveat from it.
-   Record the full code commit, or null.
-9. **Rights gate**: refuse any feed whose `redistribute` is not `yes`. No override flag.
-10. **Redaction gate**: content scan for infrastructure detail. Overrides take a specific literal
+6. **Route on class, not on a confidence cutoff.** Fixed scenery never reaches classification or
+   a wildlife report, and a detection that recurs in the same place across the window is set
+   aside as furniture, counted and reported rather than dropped. A high-confidence box on a
+   signpost is still a signpost.
+7. **Decide what is never shown, separately from what is detected.** People and vehicles on a
+   public camera are counted into the manifest and kept off the page. Partition before rendering,
+   because the render step is usually also what copies a crop into the published bundle: filter
+   at render time and the file ships with nothing pointing at it.
+8. **Rank so that a page is never blank.** Named results that clear their site's floor lead, the
+   rest follow by detector confidence, and every card says which it is. Strict ranking on the
+   second model would have published a day with no evidence at all.
+9. **Compute the licence.** Most restrictive of any contributing feed. Never a site-wide default.
+10. **Compute the coverage** from run artifacts, never typed, in the source's own unit: hours for
+    audio, frames for stills, clips for video. Hours for video only from recorded clip durations.
+11. **Resolve model names through one registry**, and fill licence, lineage and caveat from it.
+    Record the full code commit, or null, and the detector's input size and confidence
+    threshold.
+12. **Rights gate**: refuse any feed whose `redistribute` is not `yes`. No override flag.
+13. **Redaction gate**: content scan for infrastructure detail. Overrides take a specific literal
     string, never a rule, and every use is recorded in the published artifact.
-11. Verify every local reference resolves *inside* the bundle, and refuse if any does not. The
+14. Verify every local reference resolves *inside* the bundle, and refuse if any does not. The
     one exception is the site's shared stylesheet, which the site owns and checks.
-12. **Quality gate**: a recognised review status; a positive count in the manifest with a
+15. **Quality gate**: a recognised review status; a positive count in the manifest with a
     definition of what it counts; evidence on the page or a stated waiver; every known contaminant
     at the declared sites addressed by name; declared sites matching per-camera counts; numeric
-    confidences.
-13. Publish, then regenerate the index, then restyle, then verify the whole site. In that order.
+    confidences; and a detection model that says what resolution it read at.
+16. Publish, then regenerate the index, then restyle, then verify the whole site. In that order.
     Restyle is not optional. A failing verify stops the change from being proposed.
-14. **Stage every file that sequence writes**, from one named list tested against what the steps
+17. **Stage every file that sequence writes**, from one named list tested against what the steps
     produce, and stop. A person pushes.
 
 > One report in the reference deployment published a station rate of 21.8% where the model's own
@@ -273,6 +294,12 @@ nothing behind.
 
 Test real builder output through the real gates. The scheduled path's tests stubbed the builder
 and the publish step, and two refusals surfaced only when real output first went through them.
+
+**A queue and a sightings page are different artifacts.** A queue is unreviewed model output
+published so it can be checked. A sightings page states what was found, and it can only be built
+where classification ran and the class survived routing. Do not let one become the other by
+changing its title: the review status is what a reader checks, and a page that ranks by a second
+model must say when that model did not run.
 
 To correct a report that is already public, retire it; do not edit it. See
 [reference/PUBLISHING.md](reference/PUBLISHING.md#correcting-a-public-report).

@@ -17,7 +17,11 @@
       "description": "Becomes a public URL path and is permanent. Changing it breaks every link already sent. Certain names are reserved for generated source hub pages; publishing a report under one must be refused, because staging a report removes its destination directory first."
     },
     "title": { "type": "string" },
-    "schema_version": { "type": "integer", "const": 1 },
+    "schema_version": {
+      "type": "integer",
+      "enum": [1, 2],
+      "description": "2 means the report carries detector provenance: every detection model records the input size it read at. 1 predates the field and is not failed for lacking it, because retro-failing would wedge the whole site over reports nobody can re-measure, and backfilling a plausible value would be inventing provenance to satisfy a provenance check. Publish new reports at 2."
+    },
     "generated_at": { "type": "string", "format": "date-time" },
     "license": {
       "type": "string",
@@ -67,6 +71,16 @@
         "public_claim": { "type": "string" }
       }
     },
+    "superseded_by": {
+      "type": "object",
+      "description": "Recorded on the OLD report when a better one replaces it, and rendered as a notice at the top of that page linking the replacement. The old page keeps what it said: a reader who follows an old link should find both the claim and the correction, not a page that quietly changed its mind. A report with nothing to replace it is retired instead, losing its report.json entirely.",
+      "required": ["report_id", "reason", "recorded_utc"],
+      "properties": {
+        "report_id": { "type": "string", "description": "The report that replaces this one. It must be published, or the notice points at a page that does not exist, which reads as a correction nobody can check." },
+        "reason": { "type": "string", "description": "One sentence a reader can act on, saying what changed." },
+        "recorded_utc": { "type": "string", "description": "When the decision was made, not when the command last ran, so re-running does not churn the site." }
+      }
+    },
     "redaction_allowances": {
       "type": "array",
       "description": "Every redaction override used, recorded in the published artifact rather than only in somebody's shell history. An override takes a specific literal string, never a rule.",
@@ -99,7 +113,9 @@
         },
         "license": { "type": ["string", "null"] },
         "lineage": { "type": ["string", "null"] },
-        "caveat": { "type": ["string", "null"] }
+        "caveat": { "type": ["string", "null"] },
+        "input_size": { "type": ["integer", "null"], "minimum": 1, "description": "Pixels per side the detector read, required for a detection model at schema_version 2. model_version is the same string at every resolution, so without this nothing can tell two runs apart: five camera reports were published from a detector reading frames at 640 while the recorded commit named one containing the 1280 fix, and the figure existed only on the compute host." },
+        "det_conf_thres": { "type": ["number", "null"], "minimum": 0, "maximum": 1, "description": "The detector's own confidence threshold for this run. Recorded for the same reason as input_size: it changes what the report contains and is not recoverable from the output." }
       }
     },
     "floor": {
@@ -178,6 +194,11 @@
           "type": "string",
           "description": "What was done about each known contaminant at the declared sites (a site-specific sound or object the model fires on), naming each one. Disclosure is required, not a particular choice: 'not screened, counts include it' passes; silence does not."
         },
+        "model_candidates": { "type": "integer", "minimum": 0, "description": "Detections offered for review after routing and suppression. The positive count for a camera report, and what positive_definition must define." },
+        "non_recurring_suppressed_detections": { "type": "integer", "minimum": 0, "description": "Detections a recurrence filter set aside as fixed scenery. Reported rather than dropped, so a reader can see how much the filter removed." },
+        "camera_days": { "type": "integer", "minimum": 0, "description": "Camera-days covered. Two cameras over one day is two." },
+        "withheld_people": { "type": "integer", "minimum": 0, "description": "People detected, counted and NOT shown. The count is published so the page is honest about what the detector found; the crop is not, because the people in front of a public camera did not choose to be published. See reference/PUBLISHING.md." },
+        "withheld_vehicles": { "type": "integer", "minimum": 0, "description": "Vehicles detected, counted and NOT shown. Withheld alongside people because a plate is an identifier." },
         "reviewable": { "type": "boolean" }
       },
       "additionalProperties": { "type": ["integer", "number", "boolean", "string", "object", "null"] }
