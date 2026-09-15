@@ -133,7 +133,7 @@
       "required": ["assets_bundled"],
       "properties": {
         "source_frames": { "type": "number", "minimum": 0, "description": "Stills read from source video before analysis." },
-        "source_files": { "type": "number", "minimum": 0, "description": "Source files read during analysis, before frames were extracted from them." },
+        "source_files": { "type": "number", "minimum": 0, "description": "Source media files read for the report, audio or video." },
         "assets_bundled": { "type": "integer", "minimum": 0 },
         "assets_bytes": { "type": "integer", "minimum": 0 },
         "assets_deduplicated": { "type": "integer", "minimum": 0 },
