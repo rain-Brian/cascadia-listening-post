@@ -37,6 +37,7 @@ classifier that never saw the audio.
 | OrcaHello | RAIL, conservation-oriented | the **use**; restrictions can follow outputs |
 | MegaDetector | MIT | the code, permissively |
 | Ecotype classifier | CC BY 4.0; base framework CC BY-NC-SA 4.0 | attribution, and see above |
+| SpeciesNet | Apache-2.0 | the code; permissive, minimal restrictions on distribution |
 
 The RAIL licence is the one people get wrong. It is not permissive-with-paperwork. Read it before
 deployment, not after.

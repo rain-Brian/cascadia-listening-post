@@ -132,6 +132,8 @@
       "description": "Deliberately open. The bundling counts are common to every report; the rest are specific to what a given run measured, and inventing a fixed vocabulary for them would mean either lying or padding with zeros. Name each count for what it holds (model_candidates, marine_review_candidates, source_units_with_positive_segment), so a reader knows whether a number counts boxes, rows or windows before opening its definition. A null is an absence and a zero is a claim: never write a zero where the run could not measure. When review_status asserts detections, the publishing gate also requires three things this schema cannot express, because the key of a positive count varies by kind: at least one count whose key names a detection, positive or candidate; a positive_definition; and media on the page or an evidence_waiver.",
       "required": ["assets_bundled"],
       "properties": {
+        "source_frames": { "type": "number", "minimum": 0, "description": "Stills read from source video before analysis." },
+        "source_files": { "type": "number", "minimum": 0, "description": "Source files read during analysis, before frames were extracted from them." },
         "assets_bundled": { "type": "integer", "minimum": 0 },
         "assets_bytes": { "type": "integer", "minimum": 0 },
         "assets_deduplicated": { "type": "integer", "minimum": 0 },
