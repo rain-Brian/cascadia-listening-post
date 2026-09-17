@@ -109,6 +109,41 @@ Record rejections as well as adoptions. The reference deployment evaluated a gen
 classifier and **rejected** it at 77.5% against the incumbent's 79.3%. Recording that stops the
 next person re-evaluating it from scratch.
 
+## Seek outside corroboration, and publish what it says
+
+A pipeline that only checks itself will agree with itself. Two independent sources exist for the
+marine side of the reference deployment, both readable anonymously: the feed operator's own
+detections API, which carries human listener reports per node, and the detector's moderator API,
+which carries human verdicts on the same model run elsewhere.
+
+They are worth wiring in rather than consulting by hand. Two things they gave immediately:
+
+- A base rate. Those moderators confirm about **26%** of that detector's detections across a
+  month. A pipeline reporting a much higher precision without review should explain why.
+- A disagreement. Across a two-week window they record **zero** detections at one hydrophone
+  where the pipeline was producing the large majority of its positives, while listeners there
+  reported ship noise, seals, otters and porpoise.
+
+Publish the disagreement. It is the most informative thing on the page.
+
+## Watch for a site that clears its floor only just
+
+A rate above a floor is not the same as a rate distinguishable from it, and the difference decides
+whether a claim is licensed.
+
+In the reference deployment one hydrophone's named-call share sat between **8.5% and 10.4%** over
+five consecutive days against a measured floor of **7.5%**. Above the floor every day; separable
+from it on only two. On the other three, nothing from that site is presented as an animal.
+
+Two things follow that are easy to get wrong:
+
+- **Compute the rate on surviving detections**, after contaminant rejection, in both numerator and
+  denominator. Counting rejected detections in both inflates the share and an earlier reading of
+  this data did exactly that.
+- **State the threshold and the band.** The same sweep put 85% of detections in no class at all at
+  a 0.9 classifier threshold, and 25% at 0.5, with thousands sitting between. A percentage quoted
+  without its threshold is not a result.
+
 ## Why the numbers are checkable
 
 Three properties, all verifiable by a reader:

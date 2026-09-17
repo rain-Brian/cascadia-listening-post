@@ -84,7 +84,13 @@ Separate question, binding different things.
 | GPL-3.0 | the code | copyleft reaches what you link and distribute |
 | RAIL | the **use** | restrictions can follow the model's outputs |
 | MIT / BSD | the code | attribution, little else |
+| Apache-2.0 | the code | permissive, plus an explicit patent grant |
+| CC BY | the weights or data, not the code | attribution; check what the base framework carries |
 | Unrecorded | nothing safely | treat outputs as unclearable |
+
+A model can sit under two of these at once: a classifier released CC BY 4.0 on top of a base
+framework released non-commercially takes the stricter of the two for your purposes. Record both,
+not the one on the download page.
 
 The RAIL family is the one people get wrong. It is not permissive-with-paperwork; it restricts
 categories of use. Read it before deployment.
